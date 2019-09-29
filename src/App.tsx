@@ -1,7 +1,8 @@
 import React from "react";
 import "./App.css";
 
-type step =
+/** Type for the possible steps of the app */
+type TStep =
 	| "initializing"
 	| "noNfc"
 	| "nfcNotEnabled"
@@ -11,17 +12,21 @@ type step =
 	| "tagRead";
 
 const App: React.FC = () => {
-	const [step, setStep] = React.useState<step>("initializing");
+	const [step, setStep] = React.useState<TStep>("initializing");
 	const [tagContent, setTagContent] = React.useState("");
 
+	// Initialize NFC when the app is started
 	React.useEffect(() => initializeNfc(), []);
 
 	function initializeNfc() {
+		// If nfc is undefined, NFC is not available on this device, or
+		// the app is running in a web browser
 		if (typeof nfc !== "undefined") {
+			// Register an event listener
 			nfc.addNdefListener(
-				onNdefEvent,
-				() => setStep("waitingForTag"),
-				() => setStep("nfcNotEnabled")
+				onNdefEvent, // The callback function for the event listener
+				() => setStep("waitingForTag"), // Success → We're waiting for an event
+				() => setStep("nfcNotEnabled") // Error → NFC must not be enabled
 			);
 		} else {
 			setStep("noNfc");
@@ -30,6 +35,7 @@ const App: React.FC = () => {
 
 	function onGoToSettingsClick() {
 		if (typeof nfc !== "undefined") {
+			// Ask the device to open the NFC settings for the user
 			nfc.showSettings(
 				() => setStep("waitingForNfcEnabled"),
 				() => alert("An error occurred while trying to open the NFC Settings.")
@@ -38,9 +44,12 @@ const App: React.FC = () => {
 	}
 
 	function onNdefEvent(e: PhoneGapNfc.TagEvent) {
+		// Unregister the event listener
 		nfc.removeNdefListener(onNdefEvent);
 
 		setTagContent(
+			// Retrieve the payload of the tag and decode it
+			// https://www.oreilly.com/library/view/beginning-nfc/9781449324094/ch04.html
 			ndef.textHelper.decodePayload(
 				(e as PhoneGapNfc.NdefTagEvent).tag.ndefMessage[0].payload
 			)
@@ -51,6 +60,7 @@ const App: React.FC = () => {
 
 	function onStopClick() {
 		if (typeof nfc !== "undefined") {
+			// Unregister the event listener
 			nfc.removeNdefListener(onNdefEvent);
 		}
 
