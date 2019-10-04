@@ -3,14 +3,18 @@
 	width: 100vw;
 	background-color: #21252b;
 	color: #abb2bf;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	text-align: center;
 }
 
-.status {
-	padding: 16px;
+.nfc div {
+	padding: 8px 16px;
 }
 
 button {
+	margin: 16px;
 	border: none;
 	border-radius: 3px;
 	padding: 8px 12px;

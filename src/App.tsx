@@ -16,7 +16,7 @@ const App: React.FC = () => {
 	const [tagContent, setTagContent] = React.useState("");
 
 	// Initialize NFC when the app is started
-	React.useEffect(() => initializeNfc(), []);
+	React.useEffect(initializeNfc, []);
 
 	function initializeNfc() {
 		// If nfc is undefined, NFC is not available on this device, or
@@ -70,14 +70,15 @@ const App: React.FC = () => {
 	return (
 		<div className="nfc">
 			{step === "initializing" ? (
-				<div className="status">Initializing...</div>
+				<div>Initializing...</div>
 			) : step === "noNfc" ? (
-				<div className="status">
-					The device you are using doesn't appear to have the NFC feature.
+				<div>
+					The device you are using doesn't appear to have NFC; or, the
+					PhoneGap-NFC plugin hasn't been set up correctly.
 				</div>
 			) : step === "nfcNotEnabled" ? (
 				<div>
-					<div className="status">
+					<div>
 						NFC is not enabled on your device. Click the button bellow to open
 						your device's settings, then activate NFC.
 					</div>
@@ -85,22 +86,25 @@ const App: React.FC = () => {
 				</div>
 			) : step === "waitingForNfcEnabled" ? (
 				<div>
-					<div className="status">
-						Please click the button below once you have enabled NFC.
-					</div>
+					<div>Please click the button below once you have enabled NFC.</div>
 					<button onClick={initializeNfc}>Initialize NFC Reader</button>
 				</div>
 			) : step === "waitingForTag" ? (
 				<div>
-					<div className="status">Scan a NFC Tag to see its content</div>
+					<div>Scan a NFC Tag to see its content</div>
 					<button onClick={onStopClick}>Stop NFC Reader</button>
 				</div>
 			) : step === "tagRead" ? (
 				<div>
-					<div className="status">Tag Content: '{tagContent}'</div>
+					<div>Tag scanned! Here it's content:</div>
+					<div>{tagContent}</div>
 					<button onClick={onStopClick}>Stop NFC Reader</button>
 				</div>
-			) : null}
+			) : (
+				<div>
+					<div>Bye!</div>
+				</div>
+			)}
 		</div>
 	);
 };
